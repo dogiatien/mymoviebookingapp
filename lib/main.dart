@@ -195,6 +195,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'database/firestore_service.dart';
 import 'models/movie.dart';
+import 'models/showtime.dart';
 import 'models/genre.dart'; // Đảm bảo import model Genre
 import 'widgets/bottom_appbar.dart';
 import 'screens/home_screen.dart';
@@ -248,15 +249,17 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   List<Movie> _movies = [];
   List<Genre> _genres = [];
+  List<Showtime> _showtimes = [];
   late List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
     _loadMovies();
+    _loadShowTimes();
     _screens = [
       HomeScreen(),
-      ScheduleScreen(movies: _movies),
+      ScheduleScreen(),
       SearchScreen(),
       ProfileScreen(),
       LoginScreen(),
@@ -274,6 +277,12 @@ class _MainScreenState extends State<MainScreen> {
     await FirestoreService().addSampleGenres(); // Thêm mẫu thể loại vào Firestore
     print('Sample genres added to Firestore');
     _genres = await FirestoreService().getGenres();
+    setState(() {});
+  }
+void _loadShowTimes() async {
+    await FirestoreService().addSampleShowtimes(); // Thêm mẫu thể loại vào Firestore
+    print('Sample showtimes added to Firestore');
+    _showtimes = await FirestoreService().getShowtimes();
     setState(() {});
   }
 
