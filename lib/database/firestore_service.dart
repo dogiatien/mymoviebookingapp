@@ -1,12 +1,15 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/movie.dart';
+import '../models/user.dart' as AppUser;
 import '../models/showtime.dart';
 import '../models/genre.dart'; // Import Genre model
 import '../database/genre_data.dart'; // Import sampleGenres
 import '../database/movie_data.dart'; // Import sampleMovies here
 import '../database/showtime_data.dart';
+import '../database/user_data.dart';
 
 
 class FirestoreService 
@@ -17,7 +20,10 @@ class FirestoreService
       FirebaseFirestore.instance.collection('genres');
         final CollectionReference showtimeCollection =
       FirebaseFirestore.instance.collection('showtime');
-
+        final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   Future<void> addSampleMovies() async {
     for (Movie movie in sampleMovies) {
       await moviesCollection.doc(movie.id).set({
@@ -92,7 +98,58 @@ class FirestoreService
     }).toList();
   }
 
-   Future<List<Showtime>> getShowtimes() async {
+Future<void> createUserWithEmailAndPassword(String name,String email, String password, String role) async {
+    try {
+      // Tạo người dùng với email và mật khẩu
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Lấy UID của người dùng
+      String uid = userCredential.user!.uid;
+
+      // Thêm thông tin người dùng vào Firestore
+      await usersCollection.doc(uid).set({
+        'email': email,
+         'name': name,
+        'role': role,
+      });
+    } catch (e) {
+      print('Error creating user: $e');
+    }
+  }
+
+  Future<void> createSampleUsers() async {
+    for (var user in UserData.getSampleUsers()) {
+      await createUserWithEmailAndPassword(user['name']!,user['email']!, user['password']!, user['role']!);
+    }
+  }
+
+     Future<String?> checkUserRole(String uid) async {
+    try {
+      final DocumentSnapshot snapshot =
+          await usersCollection.doc(uid).get();
+
+      if (snapshot.exists) {
+        final Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('role')) {
+          return data['role'] as String?;
+        } else {
+          return null; // No role field or role is null
+        }
+      } else {
+        return null; // Document does not exist
+      }
+    } catch (e) {
+      print('Error fetching user role: $e');
+      return null;
+    }
+  }
+
+   Future<List<Showtime>> getShowtimes() async
+  {
     QuerySnapshot snapshot = await showtimeCollection.get();
     return snapshot.docs.map((doc) {
       return Showtime(
@@ -130,4 +187,55 @@ class FirestoreService
       );
     }).toList();
   }
+  
+
+     Future<AppUser.User> getUserById(String uid) async {
+    DocumentSnapshot snapshot = await usersCollection.doc(uid).get();
+    return AppUser.User.fromDocument(snapshot);
+  }
+
+  Future<List<Movie>> getMoviesByGenre(String genreId) async {
+    try {
+      QuerySnapshot snapshot = await moviesCollection.where('genre', arrayContains: genreId).get();
+      return snapshot.docs.map((doc) {
+        List<String> genresList = List<String>.from(doc['genre']);
+        return Movie(
+          id: doc.id,
+          title: doc['title'],
+          genres: genresList,
+          Director: doc['Director'],
+          price: doc['price'],
+          description: doc['description'],
+          imageUrl: doc['imageUrl'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching movies by genre: $e');
+      return []; // Return an empty list on error
+    }
+  }
+  Future<List<Movie>> getMoviesByGenreName(String genreName) async {
+  try {
+    QuerySnapshot snapshot = await moviesCollection.where('genre', arrayContains: genreName).get();
+    return snapshot.docs.map((doc) {
+      List<String> genresList = List<String>.from(doc['genre']);
+      
+      return Movie(
+        id: doc.id,
+        title: doc['title'],
+        genres: genresList,
+        Director: doc['Director'],
+        price: doc['price'],
+        description: doc['description'],
+        imageUrl: doc['imageUrl'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error fetching movies by genre name: $e');
+    return []; // Return an empty list on error
+  }
 }
+
+}
+
+

@@ -1,11 +1,243 @@
-import 'dart:ffi';
+
+// import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:moviebookingapp/main.dart';
+// import 'package:moviebookingapp/screens/home_screen.dart';
+// import 'package:moviebookingapp/screens/admin_dashboard.dart';
+// import 'package:moviebookingapp/database/firestore_service.dart';
+
+// class LoginScreen extends StatefulWidget {
+//   const LoginScreen({Key? key}) : super(key: key);
+
+//   @override
+//   _LoginScreenState createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen> {
+//   static const Color _selectedColor = Colors.black;
+//   static const Color _unSelectedColor = Colors.grey;
+
+//   Color _emailTFColor = _unSelectedColor;
+//   Color _passwordColor = _unSelectedColor;
+
+//   final TextEditingController _emailController = TextEditingController();
+//   final TextEditingController _passwordController = TextEditingController();
+
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
+//   final FirestoreService _firestoreService = FirestoreService();
+
+//   bool _isLoading = false;
+
+//   @override
+//   void dispose() {
+//     _emailController.dispose();
+//     _passwordController.dispose();
+//     super.dispose();
+//   }
+
+//   void _login() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+
+//     try {
+//       final UserCredential userCredential =
+//           await _auth.signInWithEmailAndPassword(
+//         email: _emailController.text.trim(),
+//         password: _passwordController.text,
+//       );
+
+//       // Check user role after successful login
+//       await _checkUserRole(userCredential.user!.uid);
+
+//     } on FirebaseAuthException catch (e) {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//       String errorMessage = 'Error: Something went wrong.';
+
+//       if (e.code == 'user-not-found') {
+//         errorMessage = 'No user found for that email.';
+//       } else if (e.code == 'wrong-password') {
+//         errorMessage = 'Wrong password provided for that user.';
+//       } else {
+//         errorMessage = 'Error: ${e.message}';
+//       }
+
+//       _showErrorDialog(errorMessage);
+//     } catch (e) {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//       _showErrorDialog('Error: $e');
+//     }
+//   }
+
+//   Future<void> _checkUserRole(String uid) async {
+//     try {
+//       final String? role = await _firestoreService.checkUserRole(uid);
+
+//       if (role != null) {
+//         Navigator.of(context).pushReplacement(
+//           MaterialPageRoute(
+//             builder: (ctx) => role == 'admin' ? AdminDashboard() : MainScreen(userId: uid),
+//           ),
+//         );
+//       } else {
+//         _showErrorDialog('User data not found.');
+//       }
+//     } catch (e) {
+//       _showErrorDialog('Error fetching user role: $e');
+//     } finally {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//     }
+//   }
+
+//   void _showErrorDialog(String message) {
+//     showDialog(
+//       context: context,
+//       builder: (ctx) => AlertDialog(
+//         title: Text('Error'),
+//         content: Text(message),
+//         actions: <Widget>[
+//           TextButton(
+//             child: Text('Okay'),
+//             onPressed: () {
+//               Navigator.of(ctx).pop();
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         FocusScope.of(context).unfocus();
+//       },
+//       child: Scaffold(
+//         resizeToAvoidBottomInset: false,
+//         body: SingleChildScrollView(
+//           padding: const EdgeInsets.fromLTRB(16, 80, 16, 36),
+//           child: Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Image.asset(
+//                   'lib/images/logo.png',
+//                   width: 260,
+//                   height: 260,
+//                 ),
+//                 const SizedBox(height: 64),
+//                 Container(
+//                   padding: const EdgeInsets.symmetric(horizontal: 12),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(color: _emailTFColor),
+//                     borderRadius: BorderRadius.circular(40),
+//                   ),
+//                   child: TextFormField(
+//                     controller: _emailController,
+//                     decoration: InputDecoration(
+//                       labelText: "Email or Phonenumber.",
+//                       labelStyle: TextStyle(color: _emailTFColor),
+//                       border: InputBorder.none,
+//                       contentPadding: const EdgeInsets.only(left: 16, top: 8),
+//                     ),
+//                     onChanged: (_) {
+//                       setState(() {
+//                         _emailTFColor = _selectedColor;
+//                       });
+//                     },
+//                     onTap: () {
+//                       setState(() {
+//                         _emailTFColor = _selectedColor;
+//                       });
+//                     },
+//                     onEditingComplete: () {
+//                       setState(() {
+//                         _emailTFColor = _unSelectedColor;
+//                       });
+//                     },
+//                   ),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 Container(
+//                   padding: const EdgeInsets.symmetric(horizontal: 12),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(color: _passwordColor),
+//                     borderRadius: BorderRadius.circular(40),
+//                   ),
+//                   child: TextFormField(
+//                     controller: _passwordController,
+//                     obscureText: true,
+//                     decoration: InputDecoration(
+//                       labelText: "Password.",
+//                       labelStyle: TextStyle(color: _passwordColor),
+//                       border: InputBorder.none,
+//                       contentPadding: const EdgeInsets.only(left: 16, top: 8),
+//                     ),
+//                     onChanged: (_) {
+//                       setState(() {
+//                         _passwordColor = _selectedColor;
+//                       });
+//                     },
+//                     onTap: () {
+//                       setState(() {
+//                         _passwordColor = _selectedColor;
+//                       });
+//                     },
+//                     onEditingComplete: () {
+//                       setState(() {
+//                         _passwordColor = _unSelectedColor;
+//                       });
+//                     },
+//                   ),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 TextButton(
+//                   onPressed: () {
+//                     // Handle forgot password logic
+//                   },
+//                   child: const Text('Forget Password'),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 _isLoading
+//                     ? CircularProgressIndicator()
+//                     : SizedBox(
+//                         width: double.infinity,
+//                         height: 50,
+//                         child: ElevatedButton(
+//                           style: ElevatedButton.styleFrom(
+//                             backgroundColor: Color.fromARGB(255, 164, 165, 165),
+//                           ),
+//                           onPressed: _login,
+//                           child: const Text('Login'),
+//                         ),
+//                       ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
-import 'admin_dashboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moviebookingapp/main.dart'; // Import main_screen.dart for redirection
+import 'package:moviebookingapp/screens/admin_dashboard.dart';
+import 'package:moviebookingapp/database/firestore_service.dart';
+
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -15,51 +247,111 @@ class _LoginScreenState extends State<LoginScreen> {
   Color _emailTFColor = _unSelectedColor;
   Color _passwordColor = _unSelectedColor;
 
-   // ignore: prefer_final_fields
-   FocusNode _emailTFFocusNode = FocusNode();
-   // ignore: prefer_final_fields
-   FocusNode _passwordTFFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _emailTFFocusNode.addListener(_onEmailTFFocusChange);
-    _passwordTFFocusNode.addListener(_onPasswordTFFocusChange);
-  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreService _firestoreService = FirestoreService();
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
-    _emailTFFocusNode.removeListener(_onEmailTFFocusChange);
-    _emailTFFocusNode.dispose();
-    _passwordTFFocusNode.removeListener(_onPasswordTFFocusChange);
-    _passwordTFFocusNode.dispose();
   }
 
-  void _onEmailTFFocusChange() {
+  void _login() async {
     setState(() {
-      _emailTFFocusNode.hasFocus
-          ? _emailTFColor = _selectedColor
-          : _emailTFColor = _unSelectedColor;
+      _isLoading = true;
     });
+
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Save login state to shared preferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('userId', userCredential.user!.uid);
+
+      // Check user role after successful login
+      await _checkUserRole(userCredential.user!.uid);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      String errorMessage = 'Error: Something went wrong.';
+
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+      } else {
+        errorMessage = 'Error: ${e.message}';
+      }
+
+      _showErrorDialog(errorMessage);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog('Error: $e');
+    }
   }
 
-  void _onPasswordTFFocusChange() {
-    setState(() {
-      _passwordTFFocusNode.hasFocus
-          ? _passwordColor = _selectedColor
-          : _passwordColor = _unSelectedColor;
-    });
+  Future<void> _checkUserRole(String uid) async {
+    try {
+      final String? role = await _firestoreService.checkUserRole(uid);
+
+      if (role != null) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => role == 'admin' ? AdminDashboard() : MainScreen(userId: uid),
+          ),
+        );
+      } else {
+        _showErrorDialog('User data not found.');
+      }
+    } catch (e) {
+      _showErrorDialog('Error fetching user role: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
+        FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        resizeToAvoidBottomInset:false,
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 80, 16, 36),
           child: Center(
@@ -67,79 +359,96 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                 'lib/images/logo.png',
+                  'lib/images/logo.png',
                   width: 260,
                   height: 260,
                 ),
-                const SizedBox(
-                  height: 64,
-                ),
+                const SizedBox(height: 64),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                      border: Border.all(color: _emailTFColor),
-                      borderRadius: BorderRadius.circular(40)),
-                  child: SizedBox(
-                    height: 60,
-                    child:
-                  TextField(
-                    
-                    focusNode: _emailTFFocusNode,
+                    border: Border.all(color: _emailTFColor),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
-                        labelText: "Email or Phonenumber.",
-                        labelStyle: TextStyle(color: _emailTFColor),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.only(left: 16,top:8),
-                        ),
-                        
-                  ),
-                  ),
-                ),
-                const SizedBox(height: 24,),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: _emailTFColor),
-                      borderRadius: BorderRadius.circular(40)),
-                           child: SizedBox(
-                    height: 60,
-                  
-                  child: TextField(
-                    focusNode: _passwordTFFocusNode,
-                    obscureText:true,
-                    decoration: InputDecoration(
-                        labelText: "Password.",
-                        labelStyle: TextStyle(color: _passwordColor),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.only(left: 16,top:8),
-                        ),
-                  ),
-                           ),
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                TextButton(onPressed: (){
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (ctx) => AdminDashboard(),
+                      labelText: "Email or Phonenumber",
+                      labelStyle: TextStyle(color: _emailTFColor),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.only(left: 16, top: 8),
                     ),
-                  );
-                }, child: const Text('Forget Password')),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: FilledButton(
-                    style: const ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 164, 165, 165)),
-                    ),
-                    onPressed: () {
-                     
+                    onChanged: (_) {
+                      setState(() {
+                        _emailTFColor = _selectedColor;
+                      });
                     },
-                    child: const Text('Login'),
+                    onTap: () {
+                      setState(() {
+                        _emailTFColor = _selectedColor;
+                      });
+                    },
+                    onEditingComplete: () {
+                      setState(() {
+                        _emailTFColor = _unSelectedColor;
+                      });
+                    },
                   ),
                 ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: _passwordColor),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      labelStyle: TextStyle(color: _passwordColor),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.only(left: 16, top: 8),
+                    ),
+                    onChanged: (_) {
+                      setState(() {
+                        _passwordColor = _selectedColor;
+                      });
+                    },
+                    onTap: () {
+                      setState(() {
+                        _passwordColor = _selectedColor;
+                      });
+                    },
+                    onEditingComplete: () {
+                      setState(() {
+                        _passwordColor = _unSelectedColor;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                TextButton(
+                  onPressed: () {
+                    // Handle forgot password logic
+                  },
+                  child: const Text('Forget Password'),
+                ),
+                const SizedBox(height: 24),
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 164, 165, 165),
+                          ),
+                          onPressed: _login,
+                          child: const Text('Login'),
+                        ),
+                      ),
               ],
             ),
           ),
