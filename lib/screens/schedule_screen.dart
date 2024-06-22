@@ -89,7 +89,7 @@ class ScheduleScreen extends StatelessWidget {
                             itemCount: showtimes.length,
                             itemBuilder: (context, index) {
                               Showtime showtime = showtimes[index];
-                              Movie? movie = movies.firstWhere((movie) => movie.id == showtime.movieId, orElse: () => Movie(id: '', title: '', genres: [], description: '', price: '', imageUrl: '', Director: ''));
+                              Movie? movie = movies.firstWhere((movie) => movie.id == showtime.movieId, orElse: () => Movie(id: '', title: '', genres: [], description: '', imageUrl: '', Director: ''));
                               
                               return Card(
                                 margin: EdgeInsets.symmetric(vertical: 10),

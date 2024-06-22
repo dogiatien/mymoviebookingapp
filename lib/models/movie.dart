@@ -36,7 +36,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Movie {
   final String id;
-  final String price;
+  // final String price;
   final String title;
   final List<String> genres; // Thay đổi từ String sang List<String>
   final String description;
@@ -48,7 +48,7 @@ class Movie {
     required this.title,
     required this.genres, // Thay đổi từ String sang List<String>
     required this.description,
-    required this.price,
+    // required this.price,
     required this.imageUrl,
     required this.Director,
   });
@@ -61,7 +61,7 @@ class Movie {
       title: data['title'] ?? '',
       genres: genresList,
       description: data['description'] ?? '',
-      price: data['price'] ?? '',
+      // price: data['price'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       Director: data['Director'] ?? '',
     );

@@ -30,7 +30,7 @@ class FirestoreService
         'title': movie.title,
         'genre': movie.genres,
         'Director': movie.Director,
-        'price': movie.price,
+         // 'price': movie.price,
         'description': movie.description,
         'imageUrl': movie.imageUrl,
       });
@@ -66,7 +66,7 @@ class FirestoreService
         title: doc['title'],
         genres: genresList,
         Director: doc['Director'],
-        price: doc['price'],
+        // price: doc['price'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
       );
@@ -82,7 +82,7 @@ class FirestoreService
       title: doc['title'],
       genres: genresList,
       description: doc['description'],
-      price: doc['price'],
+      // price: doc['price'],
       imageUrl: doc['imageUrl'],
       Director: doc['Director'],
     );
@@ -204,7 +204,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
           title: doc['title'],
           genres: genresList,
           Director: doc['Director'],
-          price: doc['price'],
+          // price: doc['price'],
           description: doc['description'],
           imageUrl: doc['imageUrl'],
         );
@@ -225,7 +225,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
         title: doc['title'],
         genres: genresList,
         Director: doc['Director'],
-        price: doc['price'],
+        // price: doc['price'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
       );
