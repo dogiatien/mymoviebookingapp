@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moviebookingapp/main.dart'; // Thay đổi đường dẫn tới MainScreen của bạn
 
 class SuccessScreen extends StatelessWidget {
   @override
@@ -23,8 +25,20 @@ class SuccessScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                final userId = prefs.getString('userId');
+
+                if (userId != null) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => MainScreen(userId: userId),
+                    ),
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
               },
               child: Text('Quay về màn hình chính'),
             ),

@@ -1,9 +1,13 @@
+
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../models/showtime.dart';
+import '../models/ticket.dart'; // Import the Ticket model
 import '../database/firestore_service.dart';
 import 'success_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookingScreen extends StatefulWidget {
   final Movie movie;
@@ -47,6 +51,38 @@ class _BookingScreenState extends State<BookingScreen> {
         selectedSeats.add(seat);
       }
     });
+  }
+
+  Future<void> _bookTickets() async {
+    // Lấy userId từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null) {
+      // Nếu không tìm thấy userId, bạn có thể hiển thị thông báo lỗi hoặc xử lý theo cách khác
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in')),
+      );
+      return;
+    }
+
+    String showtimeId = showtimes.firstWhere((showtime) =>
+        showtime.date.day == _selectedDate!.day &&
+        DateFormat.jm().format(showtime.startTime) == _selectedTime).stid;
+
+    List<Future<void>> ticketFutures = selectedSeats.map((seat) {
+      String ticketId = Uuid().v4();
+      Ticket ticket = Ticket(
+        tkid: ticketId,
+        movieId: widget.movie.id,
+        userId: userId, // Sử dụng userId thực tế từ SharedPreferences
+        stid: showtimeId,
+        seatNumber: seat,
+      );
+      return FirestoreService().addTicket(ticket);
+    }).toList();
+
+    await Future.wait(ticketFutures);
   }
 
   @override
@@ -161,8 +197,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (selectedSeats.isNotEmpty) {
+                          await _bookTickets();
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (ctx) => SuccessScreen(),

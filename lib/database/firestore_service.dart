@@ -3,13 +3,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/movie.dart';
+import '../models/ticket.dart';
 import '../models/user.dart' as AppUser;
 import '../models/showtime.dart';
-import '../models/genre.dart'; // Import Genre model
-import '../database/genre_data.dart'; // Import sampleGenres
-import '../database/movie_data.dart'; // Import sampleMovies here
+import '../models/genre.dart';
+import '../database/genre_data.dart';
+import '../database/movie_data.dart'; 
 import '../database/showtime_data.dart';
 import '../database/user_data.dart';
+
 
 
 class FirestoreService 
@@ -20,6 +22,8 @@ class FirestoreService
       FirebaseFirestore.instance.collection('genres');
         final CollectionReference showtimeCollection =
       FirebaseFirestore.instance.collection('showtime');
+       final CollectionReference ticketCollection =
+      FirebaseFirestore.instance.collection('ticket');
         final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,7 +34,6 @@ class FirestoreService
         'title': movie.title,
         'genre': movie.genres,
         'Director': movie.Director,
-         // 'price': movie.price,
         'description': movie.description,
         'imageUrl': movie.imageUrl,
       });
@@ -66,7 +69,6 @@ class FirestoreService
         title: doc['title'],
         genres: genresList,
         Director: doc['Director'],
-        // price: doc['price'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
       );
@@ -140,7 +142,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
           return null; // No role field or role is null
         }
       } else {
-        return null; // Document does not exist
+        return null; 
       }
     } catch (e) {
       print('Error fetching user role: $e');
@@ -204,7 +206,6 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
           title: doc['title'],
           genres: genresList,
           Director: doc['Director'],
-          // price: doc['price'],
           description: doc['description'],
           imageUrl: doc['imageUrl'],
         );
@@ -225,7 +226,6 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
         title: doc['title'],
         genres: genresList,
         Director: doc['Director'],
-        // price: doc['price'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
       );
@@ -235,6 +235,34 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
     return []; // Return an empty list on error
   }
 }
+Future<List<Movie>> searchMoviesByName(String query) async {
+  QuerySnapshot snapshot = await moviesCollection
+      .where('title', isGreaterThanOrEqualTo: query)
+      .where('title', isLessThanOrEqualTo: query + '\uf8ff')
+      .get();
+  return snapshot.docs.map((doc) {
+    List<String> genresList = List<String>.from(doc['genre']);
+    return Movie(
+      id: doc.id,
+      title: doc['title'],
+      genres: genresList,
+      Director: doc['Director'],
+      description: doc['description'],
+      imageUrl: doc['imageUrl'],
+    );
+  }).toList();
+}
+ Future<void> addTicket(Ticket ticket) {
+    return ticketCollection.add(ticket.toMap());
+  }
+Future<List<Ticket>> getTicketsByUserId(String userId) async {
+    QuerySnapshot querySnapshot = await ticketCollection.where('userId', isEqualTo: userId).get();
+
+      return querySnapshot.docs.map((doc) => Ticket.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  }
+
+
+
 
 }
 

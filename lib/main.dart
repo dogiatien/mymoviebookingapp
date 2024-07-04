@@ -50,22 +50,7 @@ Future<void> _loadSampleUsersToFirebase() async {
 }
 
 class MyApp extends StatelessWidget {
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     theme: ThemeData(
-  //       primarySwatch: Colors.blue,
-  //     ),
-  //     home: MainScreen(userId: ''), 
-  //     routes: {
-  //       '/admin_dashboard': (context) => AdminDashboard(),
-  //       '/manage_movies': (context) => ManageMoviesPage(),
-  //       '/manage_showtimes': (context) => ManageShowtimesPage(),
-  //       '/manage_users': (context) => ManageUsersPage(),
-  //       '/manage_tickets': (context) => ManageTicketsPage(),
-  //     },
-  //   );
-  // }
+
    @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -78,7 +63,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else {
-            return snapshot.data == true ? MainScreen(userId:'') : LoginScreen();
+            return snapshot.data == true ? MainScreen(userId:'') : MainScreen(userId:'');
           }
         },
       ),

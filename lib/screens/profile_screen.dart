@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart' as AppUser; // Import user model
 import '../database/firestore_service.dart'; // Import Firestore service
+import '../screens/ticket_history.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId; // Thêm thuộc tính userId để truyền vào ProfileScreen
@@ -95,7 +96,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // Xem lịch sử đặt vé
+                        Navigator.push(
+                        context,
+                         MaterialPageRoute(builder: (context) => BookingHistoryScreen()),
+                        );
                     },
                     child: Text('Xem lịch sử đặt vé'),
                   ),
