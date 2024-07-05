@@ -1,4 +1,3 @@
-
 // import 'package:flutter/material.dart';
 // import 'package:carousel_slider/carousel_slider.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -103,7 +102,7 @@
 //         ],
 //       ),
 //       backgroundColor: AppColors.background,
-      
+
 //   // Hide bottom navigation if not logged in
 //     );
 //   }
@@ -306,7 +305,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfileScreen(userId: widget.userId),
+                            builder: (context) =>
+                                ProfileScreen(userId: widget.userId),
                           ),
                         );
                       },
@@ -371,7 +371,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Center(child: CircularProgressIndicator());
               } else if (genreSnapshot.hasError) {
                 return Center(child: Text('Error: ${genreSnapshot.error}'));
-              } else if (!genreSnapshot.hasData || genreSnapshot.data!.isEmpty) {
+              } else if (!genreSnapshot.hasData ||
+                  genreSnapshot.data!.isEmpty) {
                 return Center(child: Text('No genres available.'));
               } else {
                 List<Genre> genres = genreSnapshot.data!;
@@ -381,8 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       CarouselSlider(
                         items: [
-                          'lib/images/h1.jpg',
-                          'lib/images/h2.jpg',
+                          'lib/images/h3.jpg',
+                          'lib/images/h4.jpg',
                         ].map((imagePath) {
                           return Container(
                             margin: EdgeInsets.all(6.0),
@@ -394,9 +395,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         }).toList(),
                         options: CarouselOptions(
                           autoPlay: true,
-                          aspectRatio: 16 / 9,
+                          aspectRatio: 2.5,
                           enlargeCenterPage: true,
-                          viewportFraction: 0.8,
+                          viewportFraction: 0.9,
                         ),
                       ),
                       _buildMovieSections(movies, genres),
