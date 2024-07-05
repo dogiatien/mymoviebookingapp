@@ -261,7 +261,10 @@ Future<List<Ticket>> getTicketsByUserId(String userId) async {
       return querySnapshot.docs.map((doc) => Ticket.fromMap(doc.data() as Map<String, dynamic>)).toList();
   }
 
-
+ Future<List<Ticket>> getTicketsByShowtimeId(String showtimeId) async {
+    QuerySnapshot snapshot = await ticketCollection.where('stid', isEqualTo: showtimeId).get();
+    return snapshot.docs.map((doc) => Ticket.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  }
 
 
 }
