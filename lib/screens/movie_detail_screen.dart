@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import 'booking_screen.dart';
+import 'login_screen.dart'; // Import màn hình đăng nhập của bạn
 import '../app_colors.dart';
 
 class MovieDetailScreen extends StatelessWidget {
@@ -98,12 +98,22 @@ class MovieDetailScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => BookingScreen(movie),
-                            ),
-                          );
+                        onPressed: () async {
+                          bool isAuthenticated =
+                              await checkAuthentication(context);
+                          if (isAuthenticated) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) => BookingScreen(movie),
+                              ),
+                            );
+                          } else {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) => LoginScreen(),
+                              ),
+                            );
+                          }
                         },
                         child: Text('Book Now'),
                       ),
@@ -117,5 +127,12 @@ class MovieDetailScreen extends StatelessWidget {
       ),
       backgroundColor: AppColors.background,
     );
+  }
+
+  Future<bool> checkAuthentication(BuildContext context) async {
+    // Thay thế bằng logic kiểm tra xác thực thực tế của bạn
+    // Ví dụ: kiểm tra một shared preference, secure storage hoặc trạng thái xác thực nào đó
+    // Trả về false để minh họa
+    return false;
   }
 }
