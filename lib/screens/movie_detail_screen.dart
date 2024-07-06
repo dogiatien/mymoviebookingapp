@@ -78,49 +78,51 @@ class MovieDetailScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.navbar, // Màu nền của container
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(
-                          0.2), // Màu của bóng đổ, có thể điều chỉnh opacity để làm mờ nó
-                      spreadRadius: 7, // Bán kính lan rộng của bóng đổ
-                      blurRadius: 9, // Bán kính mờ của bóng đổ
-                      offset: Offset(0,
-                          -3), // Điều chỉnh vị trí của bóng đổ (theo chiều ngang, chiều dọc)
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(16.0),
-                height: 70,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () async {
-                          bool isAuthenticated =
-                              await checkAuthentication(context);
-                          if (isAuthenticated) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (ctx) => BookingScreen(movie),
-                              ),
-                            );
-                          } else {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (ctx) => LoginScreen(),
-                              ),
-                            );
-                          }
-                        },
-                        child: Text('Book Now'),
+              if (!movie.genres.contains(
+                  'Phim Sắp Chiếu')) // Kiểm tra thể loại trước khi hiển thị nút
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.navbar, // Màu nền của container
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(
+                            0.2), // Màu của bóng đổ, có thể điều chỉnh opacity để làm mờ nó
+                        spreadRadius: 7, // Bán kính lan rộng của bóng đổ
+                        blurRadius: 9, // Bán kính mờ của bóng đổ
+                        offset: Offset(0,
+                            -3), // Điều chỉnh vị trí của bóng đổ (theo chiều ngang, chiều dọc)
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  height: 70,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () async {
+                            bool isAuthenticated =
+                                await checkAuthentication(context);
+                            if (isAuthenticated) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (ctx) => BookingScreen(movie),
+                                ),
+                              );
+                            } else {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (ctx) => LoginScreen(),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text('Book Now'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),

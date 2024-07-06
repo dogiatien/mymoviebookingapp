@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Screen'),
+        title: Text('Trang Chủ'),
         actions: [
           FutureBuilder<AppUser.User?>(
             future: _userFuture,

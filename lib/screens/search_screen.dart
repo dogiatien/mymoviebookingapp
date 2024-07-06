@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../models/genre.dart'; // Import Genre model
 import '../database/firestore_service.dart'; // Import your FirestoreService
@@ -15,7 +14,8 @@ class _SearchScreenState extends State<SearchScreen> {
   String? _selectedValue; // Variable to store selected dropdown value
   late Future<List<Genre>> _genresFuture; // Future to fetch genres
   late Future<List<Movie>> _moviesFuture; // Future to fetch movies
-  final FirestoreService _firestoreService = FirestoreService(); // Instance of FirestoreService
+  final FirestoreService _firestoreService =
+      FirestoreService(); // Instance of FirestoreService
 
   @override
   void initState() {
@@ -32,8 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<List<Genre>> _fetchGenres() async {
     try {
-      List<Genre> genres = await _firestoreService.getGenres();
-      return genres;
+      return await _firestoreService.getGenres();
     } catch (e) {
       print('Error fetching genres: $e');
       return []; // Return an empty list on error
@@ -50,7 +49,9 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _selectedValue = genreName;
       // Filter movies based on selected genre name
-      _moviesFuture = _firestoreService.getMoviesByGenreName(genreName!);
+      if (genreName != null) {
+        _moviesFuture = _firestoreService.getMoviesByGenreName(genreName);
+      }
     });
   }
 
@@ -70,7 +71,8 @@ class _SearchScreenState extends State<SearchScreen> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
-              List<Genre> genres = snapshot.data ?? []; // Get list of genres from snapshot
+              List<Genre> genres =
+                  snapshot.data ?? []; // Get list of genres from snapshot
 
               if (genres.isEmpty) {
                 return Center(child: Text('No genres available.'));
@@ -78,9 +80,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
               // Initialize selected value if not already set
               if (_selectedValue == null && genres.isNotEmpty) {
-                _selectedValue = genres.first.name; // Set to first genre name initially
+                _selectedValue =
+                    genres.first.name; // Set to first genre name initially
                 // Load movies based on the initial genre name
-                _moviesFuture = _firestoreService.getMoviesByGenreName(_selectedValue!);
+                _moviesFuture =
+                    _firestoreService.getMoviesByGenreName(_selectedValue!);
               }
 
               return Column(
@@ -103,11 +107,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: DropdownButton<String>(
                       value: _selectedValue,
                       onChanged: _onGenreSelected,
-                      items: genres
-                          .map<DropdownMenuItem<String>>((Genre genre) {
+                      items:
+                          genres.map<DropdownMenuItem<String>>((Genre genre) {
                         return DropdownMenuItem<String>(
                           value: genre.name, // Use genre name as dropdown value
-                          child: Text(genre.name), // Display genre name in dropdown
+                          child: Text(
+                              genre.name), // Display genre name in dropdown
                         );
                       }).toList(),
                       isExpanded: true, // Expand dropdown to full width
@@ -117,21 +122,31 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: FutureBuilder<List<Movie>>(
                       future: _moviesFuture,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
                         } else {
-                          List<Movie> movies = snapshot.data ?? []; // Get list of movies from snapshot
+                          List<Movie> movies = snapshot.data ??
+                              []; // Get list of movies from snapshot
 
                           if (movies.isEmpty) {
                             return Center(child: Text('No movies available.'));
                           }
 
-                          return ListView.builder(
+                          return GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3, // Number of columns
+                              childAspectRatio:
+                                  0.7, // Aspect ratio of the items
+                            ),
                             itemCount: movies.length,
                             itemBuilder: (context, index) {
-                              return MovieCard(movies[index]); // Pass movie object to MovieCard
+                              return MovieCard(movies[
+                                  index]); // Pass movie object to MovieCard
                             },
                           );
                         }
