@@ -4,6 +4,7 @@ import 'booking_screen.dart';
 import 'login_screen.dart'; // Import màn hình đăng nhập của bạn
 import '../app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MovieDetailScreen extends StatelessWidget {
   final Movie movie;

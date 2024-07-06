@@ -41,7 +41,7 @@ class _MovieCardState extends State<MovieCard> {
               Image.network(
                 widget.movie.imageUrl,
                 width: 150,
-                height: 200,
+                height: 250,
                 fit: BoxFit.cover,
               ),
               if (_isHovered)

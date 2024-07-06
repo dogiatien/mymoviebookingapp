@@ -42,6 +42,7 @@ class Movie {
   final String description;
   final String imageUrl;
   final String Director;
+  final String videoUrl;
 
   Movie({
     required this.id,
@@ -51,6 +52,7 @@ class Movie {
     // required this.price,
     required this.imageUrl,
     required this.Director,
+    required this.videoUrl,
   });
 
   factory Movie.fromFirestore(DocumentSnapshot doc) {
@@ -64,6 +66,7 @@ class Movie {
       // price: data['price'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       Director: data['Director'] ?? '',
+      videoUrl:data['videoUrl'] ??'',
     );
   }
 }

@@ -36,6 +36,7 @@ class FirestoreService
         'Director': movie.Director,
         'description': movie.description,
         'imageUrl': movie.imageUrl,
+        'videoUrl':movie.videoUrl,
       });
     }
     print('Sample movies added to Firestore');
@@ -71,6 +72,7 @@ class FirestoreService
         Director: doc['Director'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
+        videoUrl:doc['videoUrl'],
       );
     }).toList();
   }
@@ -87,6 +89,7 @@ class FirestoreService
       // price: doc['price'],
       imageUrl: doc['imageUrl'],
       Director: doc['Director'],
+      videoUrl:doc['videoUrl'],
     );
   }
 
@@ -208,6 +211,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
           Director: doc['Director'],
           description: doc['description'],
           imageUrl: doc['imageUrl'],
+          videoUrl:doc['videoUrl'],
         );
       }).toList();
     } catch (e) {
@@ -228,6 +232,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
         Director: doc['Director'],
         description: doc['description'],
         imageUrl: doc['imageUrl'],
+        videoUrl:doc['videoUrl'],
       );
     }).toList();
   } catch (e) {
@@ -249,6 +254,7 @@ Future<List<Movie>> searchMoviesByName(String query) async {
       Director: doc['Director'],
       description: doc['description'],
       imageUrl: doc['imageUrl'],
+      videoUrl:doc['videoUrl'],
     );
   }).toList();
 }
