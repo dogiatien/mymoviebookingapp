@@ -70,6 +70,25 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: Roboto-Thin
+      fonts:
+        - asset: lib/res/font/Roboto-Thin.ttf
+    - family: Roboto-Regular
+      fonts:
+        - asset: lib/res/font/Roboto-Regular.ttf
+    - family: Roboto-Medium
+      fonts:
+        - asset: lib/res/font/Roboto-Medium.ttf
+    - family: Roboto-Bold
+      fonts:
+        - asset: lib/res/font/Roboto-Bold.ttf
+    - family: Roboto-Italic
+      fonts:
+        - asset: lib/res/font/Roboto-Italic.ttf
+    - family: Roboto-Light
+      fonts:
+        - asset: lib/res/font/Roboto-Light.ttf
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

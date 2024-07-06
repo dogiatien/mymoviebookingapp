@@ -1,61 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:moviebookingapp/app_colors.dart';
+
+import 'manage_movies.dart';
+import 'manage_showtimes.dart';
+import 'manage_tickets.dart';
+import 'manage_users.dart';
 
 class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Dashboard'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AdminMenuButton(
-              text: 'Quản lý phim',
-              onPressed: () {
-                Navigator.pushNamed(context, '/manage_movies');
-              },
-            ),
-            AdminMenuButton(
-              text: 'Quản lý lịch chiếu',
-              onPressed: () {
-                Navigator.pushNamed(context, '/manage_showtimes');
-              },
-            ),
-            AdminMenuButton(
-              text: 'Quản lý người dùng',
-              onPressed: () {
-                Navigator.pushNamed(context, '/manage_users');
-              },
-            ),
-            AdminMenuButton(
-              text: 'Quản lý vé',
-              onPressed: () {
-                Navigator.pushNamed(context, '/manage_tickets');
-              },
-            ),
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          ),
+          backgroundColor: AppColors.admin_color,
+          title: Text('Admin Dashboard', style: TextStyle(
+              fontWeight: FontWeight.w600, fontSize: 18, color: Colors.white
+          ),),
+          bottom: TabBar(tabs: [
+            Tab(text: 'Ql Phim',),
+            Tab(text: 'Ql Lịch chiếu',),
+            Tab(text: 'Ql Người dùng',),
+            Tab(text: 'Ql Vé',),
+          ], isScrollable: true, indicatorColor: Colors.greenAccent, labelColor: Colors.white,  unselectedLabelColor: Colors.black54),
+        ),
+        body: const TabBarView(
+          children: <Widget>[
+            ManageMoviesPage(),
+            ManageShowtimesPage(),
+            ManageUsersPage(),
+            ManageTicketsPage(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// Widget AdminMenuButton để tạo các nút trong menu admin
-class AdminMenuButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  AdminMenuButton({required this.text, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(text),
       ),
     );
   }

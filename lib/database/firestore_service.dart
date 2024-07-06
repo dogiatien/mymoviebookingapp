@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/movie.dart';
@@ -8,7 +6,7 @@ import '../models/user.dart' as AppUser;
 import '../models/showtime.dart';
 import '../models/genre.dart';
 import '../database/genre_data.dart';
-import '../database/movie_data.dart'; 
+import '../database/movie_data.dart';
 import '../database/showtime_data.dart';
 import '../database/user_data.dart';
 
@@ -27,7 +25,44 @@ class FirestoreService
         final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
+  Future<void> addMovies(Movie movie) async {
+    await moviesCollection.doc(movie.id).set({
+      'title': movie.title,
+      'genre': movie.genres,
+      'Director': movie.Director,
+      'description': movie.description,
+      'imageUrl': movie.imageUrl,
+      'videoUrl': movie.videoUrl,
+    });
+    print('movies added to Firestore');
+  }
+
+  Future<void> updateMovie(Movie movie) async {
+    try {
+      await moviesCollection.doc(movie.id).update({
+        'title': movie.title,
+        'genre': movie.genres,
+        'director': movie.Director,
+        'description': movie.description,
+        'imageUrl': movie.imageUrl,
+        'videoUrl': movie.videoUrl,
+      });
+      print('Movie updated successfully');
+    } catch (e) {
+      print('Error updating movie: $e');
+    }
+  }
+
+  Future<void> deleteMovie(String id) async {
+    try {
+      await moviesCollection.doc(id).delete();
+      print('Movie deleted successfully');
+    } catch (e) {
+      print('Error deleting movie: $e');
+    }
+  }
+
   Future<void> addSampleMovies() async {
     for (Movie movie in sampleMovies) {
       await moviesCollection.doc(movie.id).set({
@@ -52,19 +87,41 @@ class FirestoreService
     print('Sample genres added to Firestore');
   }
 
-   Future<void> addSampleShowtimes() async {
+  Future<void> updateShowtimes(Showtime showtime) async {
+    try {
+      await showtimeCollection.doc(showtime.stid).update(showtime.toMap());
+      print('Movie updated successfully');
+    } catch (e) {
+      print('Error updating movie: $e');
+    }
+  }
+
+  Future<void> deleteShowtimes(String id) async {
+    try {
+      await showtimeCollection.doc(id).delete();
+      print('Movie deleted successfully');
+    } catch (e) {
+      print('Error deleting movie: $e');
+    }
+  }
+
+  Future<void> addShowtimes(Showtime showtime) async {
+    await showtimeCollection.doc(showtime.stid).set(showtime.toMap());
+    print('Sample showtimes added to Firestore');
+  }
+
+  Future<void> addSampleShowtimes() async {
     for (Showtime showtime in sampleShowtimes) {
       await showtimeCollection.doc(showtime.stid).set(showtime.toMap());
     }
     print('Sample showtimes added to Firestore');
   }
 
-
   Future<List<Movie>> getMovies() async {
     QuerySnapshot snapshot = await moviesCollection.get();
     return snapshot.docs.map((doc) {
       List<String> genresList = List<String>.from(doc['genre']);
-      
+
       return Movie(
         id: doc.id,
         title: doc['title'],
@@ -80,7 +137,7 @@ class FirestoreService
   Future<Movie> getMovieById(String id) async {
     DocumentSnapshot doc = await moviesCollection.doc(id).get();
     List<String> genresList = List<String>.from(doc['genre']);
-    
+
     return Movie(
       id: doc.id,
       title: doc['title'],
@@ -117,7 +174,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
       // Thêm thông tin người dùng vào Firestore
       await usersCollection.doc(uid).set({
         'email': email,
-         'name': name,
+        'name': name,
         'role': role,
       });
     } catch (e) {
@@ -127,7 +184,35 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
 
   Future<void> createSampleUsers() async {
     for (var user in UserData.getSampleUsers()) {
-      await createUserWithEmailAndPassword(user['name']!,user['email']!, user['password']!, user['role']!);
+      await createUserWithEmailAndPassword(
+          user['name']!, user['email']!, user['password']!, user['role']!);
+    }
+  }
+
+  Future<void> addUsers(AppUser.User user, String password) async {
+    await createUserWithEmailAndPassword(
+        user.name, user.email, password, user.role);
+  }
+
+  Future<void> updateUser(AppUser.User newUser) async {
+    try {
+      await usersCollection.doc(newUser.uid).update({
+        'email': newUser.email,
+        'name': newUser.name,
+        'role': newUser.role,
+      });
+      print('Movie updated successfully');
+    } catch (e) {
+      print('Error updating movie: $e');
+    }
+  }
+
+  Future<void> deleteUser(id) async {
+    try {
+      await usersCollection.doc(id).delete();
+      print('Movie deleted successfully');
+    } catch (e) {
+      print('Error deleting movie: $e');
     }
   }
 
@@ -153,8 +238,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
     }
   }
 
-   Future<List<Showtime>> getShowtimes() async
-  {
+  Future<List<Showtime>> getShowtimes() async {
     QuerySnapshot snapshot = await showtimeCollection.get();
     return snapshot.docs.map((doc) {
       return Showtime(
@@ -167,10 +251,12 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
       );
     }).toList();
   }
+
   Future<Showtime> getShowtimeById(String id) async {
     DocumentSnapshot doc = await showtimeCollection.doc(id).get();
     return Showtime.fromMap(doc.data() as Map<String, dynamic>);
   }
+
   Future<List<Showtime>> getShowtimesByMovieId(String movieId) async {
     QuerySnapshot snapshot = await showtimeCollection.where('movieId', isEqualTo: movieId).get();
     return snapshot.docs.map((doc) {
@@ -192,7 +278,24 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
       );
     }).toList();
   }
-  
+
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    try {
+      QuerySnapshot querySnapshot = await usersCollection.get();
+      List<Map<String, dynamic>> users = querySnapshot.docs.map((doc) {
+        return {
+          'uid': doc.id,
+          'email': doc['email'],
+          'name': doc['name'],
+          'role': doc['role'],
+        };
+      }).toList();
+      return users;
+    } catch (e) {
+      print('Error getting users: $e');
+      return [];
+    }
+  }
 
      Future<AppUser.User> getUserById(String uid) async {
     DocumentSnapshot snapshot = await usersCollection.doc(uid).get();
@@ -219,6 +322,7 @@ Future<void> createUserWithEmailAndPassword(String name,String email, String pas
       return []; // Return an empty list on error
     }
   }
+
   Future<List<Movie>> getMoviesByGenreName(String genreName) async {
   try {
     QuerySnapshot snapshot = await moviesCollection.where('genre', arrayContains: genreName).get();
@@ -272,7 +376,34 @@ Future<List<Ticket>> getTicketsByUserId(String userId) async {
     return snapshot.docs.map((doc) => Ticket.fromMap(doc.data() as Map<String, dynamic>)).toList();
   }
 
+  Future<List<Ticket>> getAllTickets() async {
+    try {
+      QuerySnapshot querySnapshot = await ticketCollection.get();
+      List<Ticket> tickets = querySnapshot.docs.map((doc) {
+        return Ticket.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+      return tickets;
+    } catch (e) {
+      print('Error getting tickets: $e');
+      return [];
+    }
+  }
+  Future<void> deleteTicket(String tkid) async {
+    try {
+      await ticketCollection.doc(tkid).delete();
+      print('Ticket deleted successfully');
+    } catch (e) {
+      print('Error deleting ticket: $e');
+    }
+  }
 
+  // Hàm cập nhật thông tin một vé
+  Future<void> updateTicket(Ticket ticket) async {
+    try {
+      await ticketCollection.doc(ticket.tkid).update(ticket.toMap());
+      print('Ticket updated successfully');
+    } catch (e) {
+      print('Error updating ticket: $e');
+    }
+  }
 }
-
-

@@ -27,7 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirestoreService _firestoreService = FirestoreService();
 
   bool _isLoading = false;
-
   @override
   void dispose() {
     _emailController.dispose();
