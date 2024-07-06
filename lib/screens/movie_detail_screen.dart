@@ -3,6 +3,7 @@ import '../models/movie.dart';
 import 'booking_screen.dart';
 import 'login_screen.dart'; // Import màn hình đăng nhập của bạn
 import '../app_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MovieDetailScreen extends StatelessWidget {
   final Movie movie;
@@ -132,9 +133,16 @@ class MovieDetailScreen extends StatelessWidget {
   }
 
   Future<bool> checkAuthentication(BuildContext context) async {
-    // Thay thế bằng logic kiểm tra xác thực thực tế của bạn
-    // Ví dụ: kiểm tra một shared preference, secure storage hoặc trạng thái xác thực nào đó
-    // Trả về false để minh họa
-    return false;
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if(userId == null)
+    {
+      return false;
+    }
+    else
+    {
+      return true ;
+    }
+    
   }
 }
