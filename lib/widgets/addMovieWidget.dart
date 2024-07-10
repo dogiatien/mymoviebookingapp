@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moviebookingapp/models/movie.dart';
 
-import '../app_colors.dart';
+import '../../../app_colors.dart';
 
 class AddMovieWidget extends StatefulWidget {
 

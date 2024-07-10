@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:moviebookingapp/app_colors.dart';
 import 'package:moviebookingapp/database/firestore_service.dart';
+import 'package:moviebookingapp/widgets/addMovieWidget.dart';
 
-import '../models/movie.dart';
+import '../../../models/genre.dart';
+import '../../../models/movie.dart';
 
 class ManageMoviesPage extends StatefulWidget {
   const ManageMoviesPage({super.key});
@@ -15,11 +17,13 @@ class ManageMoviesPage extends StatefulWidget {
 
 class _ManageMoviesPageState extends State<ManageMoviesPage> {
   List<Movie> data = [];
+  List<String> genres = [];
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    fetchGener() ;
   }
 
   Future<void> fetchData() async {
@@ -32,180 +36,24 @@ class _ManageMoviesPageState extends State<ManageMoviesPage> {
     print('data size: ${movies.length}');
   }
 
+  void fetchGener() async {
+    List<Genre> genreData =  await FirestoreService().getGenres();
+    genres = genreData.map((genre) => genre.name).toList();
+    print('genres size: ${genres.length}');
+  }
+
   void _addMovie({Movie? movie}) async {
-    TextEditingController idMovieController = TextEditingController();
-    TextEditingController titleController = TextEditingController();
-    TextEditingController genresController = TextEditingController();
-    TextEditingController directorController = TextEditingController();
-    TextEditingController desController = TextEditingController();
-    TextEditingController imgController = TextEditingController();
-    TextEditingController urlMovieController = TextEditingController();
-
-    bool isEdit = false;
-    if (movie != null) {
-      isEdit = true;
-
-      idMovieController.text = movie.id;
-      titleController.text = movie.title;
-      genresController.text = movie.genres.join(', ');
-      directorController.text = movie.Director;
-      desController.text = movie.description;
-      imgController.text = movie.imageUrl;
-      urlMovieController.text = movie.videoUrl;
-    }
-
     showBottomSheet(
         context: context,
         builder: (c) {
-          return Container(
-            color: AppColors.admin_color1,
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            // height: MediaQuery.of(context).size.height / 2,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
-                      isEdit ? 'Sửa dữ liệu' : 'Thêm dữ liệu',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                  isEdit
-                      ? Text('IdMovie: ${idMovieController.text}')
-                      : TextField(
-                          textAlign: TextAlign.start,
-                          controller: idMovieController,
-                          decoration: const InputDecoration(
-                            // border: B,
-                            floatingLabelBehavior: FloatingLabelBehavior.auto,
-                            alignLabelWithHint: true,
-                            label: Text(
-                              'Movie ID',
-                            ),
-                          ),
-                        ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: titleController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'Title',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: genresController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'genres',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: directorController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'director',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: desController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'des',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: imgController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'Img',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: urlMovieController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'Url movie',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      if (titleController.text == '' ||
-                          desController.text == '' ||
-                          imgController.text == '' ||
-                          urlMovieController.text == '' ||
-                          genresController.text == '' ||
-                          directorController.text == '') {
-                        return;
-                      }
-                      Movie newMovie = Movie(
-                          id: idMovieController.text,
-                          title: titleController.text,
-                          genres: genresController.text.split(', '),
-                          description: desController.text,
-                          imageUrl: imgController.text,
-                          Director: directorController.text,
-                          videoUrl: urlMovieController.text);
-
-                      isEdit
-                          ? _readyEditMovie(newMovie)
-                          : _readyAddMovie(newMovie);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.admin_color,
-                        borderRadius: BorderRadius.all(Radius.circular(15))
-                      ),
-                      padding: EdgeInsets.all(10),
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      child: Center(child: Text('Đồng ý')),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
-          );
+          return AddMovieWidget(callback: (type, data) {
+            if (type == 'EDIT') {
+              _readyEditMovie(data);
+            }else {
+              _readyAddMovie(data);
+            }
+          }, genres: genres, movie: movie,);
         });
-    // await FirestoreService().addMovies();
   }
 
   @override
@@ -358,3 +206,4 @@ class _ManageMoviesPageState extends State<ManageMoviesPage> {
     fetchData();
   }
 }
+

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moviebookingapp/app_colors.dart';
+import 'package:moviebookingapp/widgets/addShowtimesWidget.dart';
 
-import '../database/firestore_service.dart';
-import '../models/showtime.dart';
+import '../../../database/firestore_service.dart';
+import '../../../models/movie.dart';
+import '../../../models/showtime.dart';
 
 class ManageShowtimesPage extends StatefulWidget {
   const ManageShowtimesPage({super.key});
@@ -14,18 +16,13 @@ class ManageShowtimesPage extends StatefulWidget {
 
 class _ManageShowtimesPageState extends State<ManageShowtimesPage> {
   List<Showtime> data = [];
-  final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
-  TextEditingController stidController = TextEditingController();
-  TextEditingController movieIdController = TextEditingController();
-  TextEditingController theaterIdController = TextEditingController();
-  TextEditingController startTimeController = TextEditingController();
-  TextEditingController endTimeController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
+  List<Movie> movies = [];
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    fetchMovie();
   }
 
   Future<void> fetchData() async {
@@ -38,173 +35,23 @@ class _ManageShowtimesPageState extends State<ManageShowtimesPage> {
     print('data size: ${showtimes.length}');
   }
 
+  Future<void> fetchMovie() async {
+    movies = await FirestoreService().getMovies();
+    print('data size: ${movies.length}');
+  }
+
   void _addShowtime({Showtime? showtime}) async {
-    stidController.text = '';
-    movieIdController.text = '';
-    theaterIdController.text = '';
-    startTimeController.text = '';
-    endTimeController.text = '';
-    dateController.text = '';
-
-    bool isEdit = false;
-    if (showtime != null) {
-      isEdit = true;
-      stidController.text = showtime.stid;
-      movieIdController.text = showtime.movieId;
-      theaterIdController.text = showtime.theaterId;
-      try {
-        startTimeController.text =
-            DateFormat('yyyy-MM-dd HH:mm').format(showtime.startTime);
-        endTimeController.text =
-            DateFormat('yyyy-MM-dd HH:mm').format(showtime.endTime);
-        dateController.text =
-            DateFormat('yyyy-MM-dd HH:mm').format(showtime.date);
-      } catch (e) {}
-    }
-
     showBottomSheet(
         context: context,
         builder: (c) {
-          return Container(
-            color: AppColors.admin_color,
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
-                      isEdit ? 'Sửa dữ liệu' : 'Thêm dữ liệu',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                  isEdit
-                      ? Text('ShowTimeID: ${stidController.text}')
-                      : TextField(
-                          textAlign: TextAlign.start,
-                          controller: stidController,
-                          decoration: const InputDecoration(
-                            // border: B,
-                            floatingLabelBehavior: FloatingLabelBehavior.auto,
-                            alignLabelWithHint: true,
-                            label: Text(
-                              'stid',
-                            ),
-                          ),
-                        ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: movieIdController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'movieId',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: theaterIdController,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'theaterId',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: startTimeController,
-                    maxLength: 16,
-                    keyboardType: TextInputType.datetime,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'startTime',
-                      ),
-                    ),
-                    onChanged: (value) {
-                      _handleDateInput(value, 0);
-                    },
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: endTimeController,
-                    keyboardType: TextInputType.datetime,
-                    maxLength: 16,
-                    decoration: const InputDecoration(
-                      // border: B,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'endTime',
-                      ),
-                    ),
-                    onChanged: (value) {
-                      _handleDateInput(value, 1);
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    textAlign: TextAlign.start,
-                    controller: dateController,
-                    keyboardType: TextInputType.datetime,
-                    maxLength: 16,
-                    decoration: const InputDecoration(
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      alignLabelWithHint: true,
-                      label: Text(
-                        'date',
-                      ),
-                    ),
-                    onChanged: (value) {
-                      _handleDateInput(value, 2);
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          if (startTimeController.text == '' ||
-                              endTimeController.text == '' ||
-                              stidController.text == '' ||
-                              theaterIdController.text == '' ||
-                              movieIdController.text == '' ||
-                              dateController.text == '') {
-                            return;
-                          }
-                          Showtime newShowtime = Showtime(
-                              stid: stidController.text,
-                              movieId: movieIdController.text,
-                              theaterId: theaterIdController.text,
-                              startTime: DateTime(2024, 6, 21, 18, 0),
-                              endTime: DateTime(2024, 6, 21, 18, 0),
-                              date: DateTime(2024, 6, 21, 18, 0));
-
-                          isEdit
-                              ? _readyEditShowtime(newShowtime)
-                              : _readyAddShowtime(newShowtime);
-                        },
-                        child: Text('Đồng ý')),
-                  ),
-                ],
-              ),
-            ),
-          );
+          return AddShowTimesWidget(callback: (type, data) {
+            if (type == 'EDIT') {
+              _readyEditShowtime(data);
+            }else {
+              _readyAddShowtime(data);
+            }
+          }, movies: movies, showtime: showtime,);
         });
-    // await FirestoreService().addShowtimes();
   }
 
   @override
@@ -330,44 +177,6 @@ class _ManageShowtimesPageState extends State<ManageShowtimesPage> {
         ),
       ),
     );
-  }
-
-  void _handleDateInput(String value, int type) {
-    try {
-      // Remove any non-digit characters and check if we have 8 digits (ddMMyyyy)
-      String digitsOnly = value.replaceAll(RegExp(r'\D'), '');
-      if (digitsOnly.length == 8) {
-        // Format the input as dd/MM/yyyy
-        String formatted =
-            '${digitsOnly.substring(0, 2)}/${digitsOnly.substring(2, 4)}/${digitsOnly.substring(4, 8)}';
-        DateTime date = dateFormat.parse(formatted);
-
-        if (type == 0) {
-          startTimeController.value = TextEditingValue(
-            text: dateFormat.format(date),
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: dateFormat.format(date).length),
-            ),
-          );
-        } else if (type == 1) {
-          endTimeController.value = TextEditingValue(
-            text: dateFormat.format(date),
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: dateFormat.format(date).length),
-            ),
-          );
-        } else {
-          dateController.value = TextEditingValue(
-            text: dateFormat.format(date),
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: dateFormat.format(date).length),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      // Handle any parsing errors if needed
-    }
   }
 
   void _readyAddShowtime(Showtime showtime) async {

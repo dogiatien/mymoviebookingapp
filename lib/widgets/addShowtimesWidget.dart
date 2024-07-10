@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../app_colors.dart';
-import '../models/movie.dart';
-import '../models/showtime.dart';
+import '../../../app_colors.dart';
+import '../../../models/movie.dart';
+import '../../../models/showtime.dart';
 
 class AddShowTimesWidget extends StatefulWidget {
 

@@ -388,6 +388,7 @@ Future<List<Ticket>> getTicketsByUserId(String userId) async {
       return [];
     }
   }
+  
   Future<void> deleteTicket(String tkid) async {
     try {
       await ticketCollection.doc(tkid).delete();
