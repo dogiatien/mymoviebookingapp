@@ -42,7 +42,8 @@ dependencies:
   uuid: ^3.0.4
   youtube_player_flutter: ^8.0.0
   table_calendar: ^3.0.4
-
+  flutter_braintree: ^4.0.0
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
