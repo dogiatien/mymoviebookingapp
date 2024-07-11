@@ -160,27 +160,52 @@ class FirestoreService
     }).toList();
   }
 
-Future<void> createUserWithEmailAndPassword(String name,String email, String password, String role) async {
-    try {
-      // Tạo người dùng với email và mật khẩu
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+// Future<void> createUserWithEmailAndPassword(String name,String email, String password, String role) async {
+//     try {
+//       // Tạo người dùng với email và mật khẩu
+//       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+//         email: email,
+//         password: password,
+//       );
 
-      // Lấy UID của người dùng
-      String uid = userCredential.user!.uid;
+//       // Lấy UID của người dùng
+//       String uid = userCredential.user!.uid;
 
-      // Thêm thông tin người dùng vào Firestore
-      await usersCollection.doc(uid).set({
-        'email': email,
-        'name': name,
-        'role': role,
-      });
-    } catch (e) {
-      print('Error creating user: $e');
-    }
+//       // Thêm thông tin người dùng vào Firestore
+//       await usersCollection.doc(uid).set({
+//         'email': email,
+//         'name': name,
+//         'role': role,
+//       });
+//     } catch (e) {
+//       print('Error creating user: $e');
+//     }
+//   }
+Future<void> createUserWithEmailAndPassword(
+    String name, String email, String password, String role) async {
+  try {
+    // Tạo người dùng với email và mật khẩu
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // Lấy UID của người dùng
+    String uid = userCredential.user!.uid;
+
+    // Thêm thông tin người dùng vào Firestore
+    await usersCollection.doc(uid).set({
+      'email': email,
+      'name': name,
+      'role': role,
+    });
+
+    print('User added to Firestore');
+
+  } catch (e) {
+    print('Error creating user: $e');
   }
+}
 
   Future<void> createSampleUsers() async {
     for (var user in UserData.getSampleUsers()) {
@@ -406,5 +431,13 @@ Future<List<Ticket>> getTicketsByUserId(String userId) async {
     } catch (e) {
       print('Error updating ticket: $e');
     }
+  }
+   Future<void> addUser(AppUser.User user) {
+    return usersCollection.doc(user.uid).set({
+      'uid': user.uid,
+      'email': user.email,
+      'name': user.name,
+      'role': user.role,
+    });
   }
 }
