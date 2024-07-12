@@ -1,9 +1,13 @@
+
+// import 'dart:convert';
 // import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:flutter_braintree/flutter_braintree.dart';
 // import '../models/ticket.dart';
 // import '../models/movie.dart';
 // import '../models/showtime.dart';
 // import '../screens/success_screen.dart';
-// import '../database/firestore_service.dart'; // Import your Firestore service
+// import '../database/firestore_service.dart';
 
 // class PaymentScreen extends StatelessWidget {
 //   final List<Ticket> tickets;
@@ -11,6 +15,38 @@
 //   final FirestoreService firestoreService = FirestoreService();
 
 //   PaymentScreen({required this.tickets, required this.totalAmount});
+
+//   Future<void> _startPayment(BuildContext context) async {
+//     final request = BraintreeDropInRequest(
+//       tokenizationKey: 'sandbox_38qh6brd_kf6td89vd4p77y3w',
+//       collectDeviceData: true,
+//       paypalRequest: BraintreePayPalRequest(
+        
+//         amount: totalAmount.toString(),
+//         displayName: 'Your Company',
+//       ),
+//       cardEnabled: true,
+//       googlePaymentRequest: BraintreeGooglePaymentRequest(
+//         totalPrice:totalAmount.toString(), currencyCode: 'USD'),
+//       paypalEnabled: true,
+//       vaultManagerEnabled:true,
+//     );
+
+//     final result = await BraintreeDropIn.start(request);
+//     if (result != null) {
+//       // Handle successful payment
+//       Navigator.of(context).pushReplacement(
+//         MaterialPageRoute(
+//           builder: (ctx) => SuccessScreen(),
+//         ),
+//       );
+//     } else {
+//       // Handle payment cancellation
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Payment was cancelled')),
+//       );
+//     }
+//   }
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -97,16 +133,7 @@
 //             SizedBox(height: 20),
 //             Center(
 //               child: ElevatedButton(
-//                 onPressed: () {
-//                   // Add payment processing logic here
-//                   // For example, call a payment API or navigate to a payment gateway
-//                   // After successful payment, you can navigate to a success screen
-//                   Navigator.of(context).pushReplacement(
-//                     MaterialPageRoute(
-//                       builder: (ctx) => SuccessScreen(),
-//                     ),
-//                   );
-//                 },
+//                 onPressed: () => _startPayment(context),
 //                 child: Text('Proceed to Payment'),
 //               ),
 //             ),
@@ -151,14 +178,25 @@ class PaymentScreen extends StatelessWidget {
 
   Future<void> _startPayment(BuildContext context) async {
     final request = BraintreeDropInRequest(
-      tokenizationKey: 'sandbox_38qh6brd_kf6td89vd4p77y3w',
+      email:'kokaa4624@gmail.com',
+      tokenizationKey:'sandbox_38qh6brd_kf6td89vd4p77y3w',
       collectDeviceData: true,
       paypalRequest: BraintreePayPalRequest(
         amount: totalAmount.toString(),
         displayName: 'Your Company',
+       payPalPaymentIntent: PayPalPaymentIntent.authorize,
+        payPalPaymentUserAction: PayPalPaymentUserAction.commit,
       ),
       cardEnabled: true,
-      paypalEnabled: true,
+      googlePaymentRequest: BraintreeGooglePaymentRequest(
+        totalPrice: totalAmount.toString(),
+        currencyCode: 'USD',
+        billingAddressRequired: false,
+        googleMerchantID: '5398210050',
+      ),
+      paypalEnabled: false,
+      vaultManagerEnabled: false,
+
     );
 
     final result = await BraintreeDropIn.start(request);
