@@ -1,4 +1,3 @@
-
 // import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -314,8 +313,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (role != null) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (ctx) => role == 'admin' ? AdminDashboard() : MainScreen(userId: uid),
-          ),
+              builder: (ctx) => role == 'admin'
+                  ? AdminDashboard()
+                  : MainScreen(userId: uid, toggleThemeMode: () {})),
         );
       } else {
         _showErrorDialog('User data not found.');

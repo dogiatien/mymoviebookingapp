@@ -93,7 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trang Chủ'),
+        title: Text(
+          'Trang Chủ',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         actions: [
           FutureBuilder<AppUser.User?>(
             future: _userFuture,
@@ -135,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text(
                     'Đăng nhập',
-                    style: TextStyle(color: Colors.black),
                   ),
                 );
               }

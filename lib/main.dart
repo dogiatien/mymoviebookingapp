@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'database/firestore_service.dart';
@@ -41,7 +40,7 @@ Future<void> _loadShowTimeToFirebase() async {
 
 Future<void> _loadMoviesToFirebase() async {
   await FirestoreService().addSampleMovies();
-  print('Sample genres added to Firestore');
+  print('Sample movies added to Firestore');
 }
 
 Future<void> _loadSampleUsersToFirebase() async {
@@ -49,21 +48,53 @@ Future<void> _loadSampleUsersToFirebase() async {
   print('Sample users added to Firestore');
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-   @override
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeMode();
+  }
+
+  void _loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _themeMode = (prefs.getBool('isDarkMode') ?? false)
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    });
+  }
+
+  void _toggleThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      prefs.setBool('isDarkMode', _themeMode == ThemeMode.dark);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: _themeMode,
       home: FutureBuilder(
         future: _checkLoginStatus(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else {
-            return snapshot.data == true ? MainScreen(userId:'') : MainScreen(userId:'');
+            return snapshot.data == true
+                ? MainScreen(userId: '', toggleThemeMode: _toggleThemeMode)
+                : LoginScreen();
           }
         },
       ),
@@ -85,8 +116,9 @@ class MyApp extends StatelessWidget {
 
 class MainScreen extends StatefulWidget {
   final String userId;
+  final Function toggleThemeMode;
 
-  MainScreen({required this.userId});
+  MainScreen({required this.userId, required this.toggleThemeMode});
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -95,8 +127,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   List<Widget> _screens = [];
-
-  @override
   void initState() {
     super.initState();
     _screens = [
@@ -123,6 +153,12 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          widget.toggleThemeMode();
+        },
+        child: Icon(Icons.brightness_6),
       ),
     );
   }

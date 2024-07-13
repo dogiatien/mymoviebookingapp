@@ -32,8 +32,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       AppUser.User user = await FirestoreService().getUserById(widget.userId);
-      _nameController.text = user.name.toString(); // Cập nhật tên người dùng vào controller
-      _emailController.text = user.email; // Cập nhật email người dùng vào controller
+      _nameController.text =
+          user.name.toString(); // Cập nhật tên người dùng vào controller
+      _emailController.text =
+          user.email; // Cập nhật email người dùng vào controller
       return user;
     } catch (e) {
       throw Exception('Failed to load user data: $e');
@@ -51,7 +53,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(
+          'Profile',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
       ),
       body: FutureBuilder<AppUser.User?>(
         future: _userFuture,
@@ -73,12 +78,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 50,
                     // Thay thế ảnh đại diện bằng ảnh thực tế của người dùng
-                    backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                    backgroundImage:
+                        NetworkImage('https://via.placeholder.com/150'),
                   ),
                   SizedBox(height: 20),
                   TextFormField(
                     controller: _nameController,
-                    readOnly: true, // Chỉ cho phép xem tên người dùng, không cho chỉnh sửa
+                    readOnly:
+                        true, // Chỉ cho phép xem tên người dùng, không cho chỉnh sửa
                     decoration: InputDecoration(
                       labelText: 'Tên',
                       border: OutlineInputBorder(),
@@ -87,7 +94,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 10),
                   TextFormField(
                     controller: _emailController,
-                    readOnly: true, // Chỉ cho phép xem email người dùng, không cho chỉnh sửa
+                    readOnly:
+                        true, // Chỉ cho phép xem email người dùng, không cho chỉnh sửa
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
@@ -96,10 +104,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                        Navigator.push(
+                      Navigator.push(
                         context,
-                         MaterialPageRoute(builder: (context) => BookingHistoryScreen()),
-                        );
+                        MaterialPageRoute(
+                            builder: (context) => BookingHistoryScreen()),
+                      );
                     },
                     child: Text('Xem lịch sử đặt vé'),
                   ),
@@ -109,7 +118,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Chuyển đến màn hình chỉnh sửa thông tin cá nhân
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => EditProfileScreen()),
                       );
                     },
                     child: Text('Thay đổi thông tin cá nhân'),
@@ -123,7 +133,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
 
 class EditProfileScreen extends StatelessWidget {
   @override

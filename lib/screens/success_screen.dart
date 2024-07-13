@@ -32,8 +32,8 @@ class SuccessScreen extends StatelessWidget {
                 if (userId != null) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => MainScreen(userId: userId),
-                    ),
+                        builder: (context) =>
+                            MainScreen(userId: userId, toggleThemeMode: () {})),
                     (route) => false,
                   );
                 } else {

@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moviebookingapp/main.dart';
 import 'package:moviebookingapp/database/firestore_service.dart';
-import 'package:moviebookingapp/models/user.dart' as model; // Import the User model with an alias
+import 'package:moviebookingapp/models/user.dart'
+    as model; // Import the User model with an alias
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -23,7 +24,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
   final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
@@ -51,7 +53,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      final auth.UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      final auth.UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
@@ -70,13 +73,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await prefs.setString('userId', userCredential.user!.uid);
 
       // Store additional user info in Firestore
-      await _firestoreService.addUser(newUser); // This line stores user in Firestore
+      await _firestoreService
+          .addUser(newUser); // This line stores user in Firestore
 
       // Navigate to the main screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (ctx) => MainScreen(userId: userCredential.user!.uid),
-        ),
+            builder: (ctx) => MainScreen(
+                userId: userCredential.user!.uid, toggleThemeMode: () {})),
       );
     } on auth.FirebaseAuthException catch (e) {
       setState(() {
@@ -192,7 +196,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 164, 165, 165),
+                            backgroundColor:
+                                const Color.fromARGB(255, 164, 165, 165),
                           ),
                           onPressed: _register,
                           child: const Text('Register'),

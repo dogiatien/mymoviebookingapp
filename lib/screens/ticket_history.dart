@@ -23,7 +23,8 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
     final userId = prefs.getString('userId');
 
     if (userId != null) {
-      List<Ticket> fetchedTickets = await FirestoreService().getTicketsByUserId(userId);
+      List<Ticket> fetchedTickets =
+          await FirestoreService().getTicketsByUserId(userId);
       setState(() {
         tickets = fetchedTickets;
         _isLoading = false;
@@ -47,7 +48,8 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                   margin: EdgeInsets.all(10),
                   child: ListTile(
                     title: Text('Vé xem phim: ${ticket.movieId}'),
-                    subtitle: Text('Ghế: ${ticket.seatNumber}\nNgày: ${ticket.stid}'),
+                    subtitle:
+                        Text('Ghế: ${ticket.seatNumber}\nNgày: ${ticket.stid}'),
                   ),
                 );
               },

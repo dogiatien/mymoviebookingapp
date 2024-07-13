@@ -61,7 +61,10 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: _handleTap, // Handle tap to unfocus keyboard
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Search'),
+          title: Text(
+            'Search',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
         ),
         body: FutureBuilder<List<Genre>>(
           future: _genresFuture,
